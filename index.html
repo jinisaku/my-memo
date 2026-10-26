@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>메모</title>
+    <title>스위치 메모</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="메모">
+    <meta name="apple-mobile-web-app-title" content="스위치 메모">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1150/1150592.png">
 
     <style>
@@ -95,12 +95,12 @@
 
         .btn:active { transform: scale(0.96); }
 
-        /* 아이폰 설정 스타일 알약 토글 스위치 */
+        /* 아이폰 설정 스타일 알약 토글 스위치 (비밀번호 기능 제거 버전) */
         .ios-switch {
             position: relative;
             width: 54px;
             height: 31px;
-            background-color: #e5e5ea; /* 기본 회색 배경 */
+            background-color: #e5e5ea;
             border-radius: 31px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -117,16 +117,15 @@
             border-radius: 50%;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 3px 1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s cubic-bezier(0.15, 0.85, 0.35, 1.2), background-color 0.3s;
-            transform: translateX(23px); /* 켜진 상태 (오른쪽: 흰색 원 + 회색 배경) */
+            transform: translateX(23px); /* 켜진 상태 (흰색 배경 모드) */
         }
 
-        /* 스위치가 꺼졌을 때 (검정 원본 모드: 왼쪽 이동 + 검정 원 + 회색 배경) */
         .ios-switch.off {
             background-color: #e5e5ea;
         }
         .ios-switch.off .ios-switch-thumb {
-            transform: translateX(0px); 
-            background-color: #000000; 
+            transform: translateX(0px); /* 꺼진 상태 (검정 원본 모드) */
+            background-color: #000000;
         }
 
         .editor-header-right {
@@ -155,49 +154,35 @@
             gap: 10px;
         }
 
+        /* 목록 아이템 디자인 수정 (미리보기 최대 10줄 지원) */
         .memo-item {
             background-color: #ffffff;
             border-radius: 12px;
             padding: 16px;
             cursor: pointer;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
             border: 1px solid #e5e5ea;
         }
 
-        .memo-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            overflow: hidden;
-            flex: 1;
-            margin-right: 12px;
-        }
-
         .memo-preview {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 500;
             color: #000000;
-            white-space: nowrap;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 10; /* 최대 10줄 표시 후 ... 생략 */
+            -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: pre-wrap;
         }
 
         .memo-date {
-            font-size: 13px;
+            font-size: 12px;
             color: #8e8e93;
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #ff3b30;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 6px 10px;
-            font-weight: 500;
         }
 
         .empty-state {
@@ -208,7 +193,7 @@
             line-height: 1.5;
         }
 
-        /* 캘린더 스타일 */
+        /* 캘린더 페이지 스타일 개편 (아이폰 스타일 칸막이 제거 & 넓은 시야) */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -221,7 +206,7 @@
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 6px 2px;
             flex: 1;
             overflow-y: auto;
         }
@@ -231,15 +216,14 @@
             font-size: 13px;
             font-weight: 600;
             color: #8e8e93;
-            padding-bottom: 4px;
+            padding-bottom: 8px;
         }
 
         .calendar-cell {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 4px;
-            min-height: 95px; 
-            border: 1px solid #e5e5ea;
+            background-color: transparent; /* 칸막이 테두리 제거 */
+            border-radius: 6px;
+            padding: 2px;
+            min-height: 90px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -248,38 +232,35 @@
         }
 
         .calendar-cell.other-month {
-            opacity: 0.3;
+            opacity: 0.25;
         }
 
         .calendar-date-num {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 2px;
-            color: #333;
+            margin-bottom: 4px;
+            text-align: center;
+            color: #1c1c1e;
         }
 
-        .memo-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            overflow-y: auto;
-            max-height: 70px;
-        }
-
+        /* 캘린더 날짜 안에는 최신 메모 딱 1개만, 칸에 다 차도록 스타일링 */
         .calendar-cell-preview {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 500;
             color: #004085;
             background-color: #cce5ff;
-            border-radius: 3px;
-            padding: 2px 4px;
-            white-space: nowrap;
+            border-radius: 4px;
+            padding: 3px 5px;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
             width: 100%;
+            line-height: 1.3;
         }
 
-        /* 공통 모달 팝업 스타일 */
+        /* 모달 팝업 스타일 (예쁘게 정돈) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -295,79 +276,94 @@
         }
         .modal-card {
             background-color: #ffffff;
-            border-radius: 14px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 330px;
+            max-width: 340px;
+            max-height: 75vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 20px;
-            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
-
-        /* 비밀번호 입력창 스타일 */
-        .pin-dots {
+        .modal-header {
+            padding: 16px 20px;
+            font-size: 17px;
+            font-weight: 700;
+            border-bottom: 1px solid #e5e5ea;
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin: 20px 0;
+            justify-content: space-between;
+            align-items: center;
         }
-        .pin-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 2px solid #007aff;
-            background-color: transparent;
-            transition: background-color 0.2s;
-        }
-        .pin-dot.filled {
-            background-color: #007aff;
-        }
-        .pin-keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             gap: 10px;
         }
-        .pin-key {
-            background-color: #f2f2f7;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            margin: 0 auto;
-            font-size: 22px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        /* 점 3개(메뉴) 드롭다운 팝업 스타일 */
+        .menu-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 16px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 160px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 500;
+            border: 1px solid #e5e5ea;
         }
-        .pin-key:active {
-            background-color: #d1d1d6;
+        .menu-dropdown.active {
+            display: flex;
+        }
+        .menu-item-btn {
+            background: none;
+            border: none;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #000;
+            border-bottom: 1px solid #f2f2f7;
+        }
+        .menu-item-btn:last-child {
+            border-bottom: none;
+            color: #ff3b30; /* 삭제는 빨간색 포인트 */
+        }
+        .menu-item-btn:active {
+            background-color: #f2f2f7;
         }
 
-        /* 에디터 스타일 */
+        /* 편집 화면 스타일 (기본 높이 2배 확대 & 자동 늘어나기) */
         .editor-container {
             position: relative;
             flex: 1;
             border-radius: 12px;
-            overflow: hidden;
+            overflow-y: auto;
             background-color: #000000;
             border: 1px solid #d1d1d6;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
 
         textarea {
             width: 100%;
+            min-height: 280px; /* 기본 작성칸 2배 이상 넉넉하게 확장 */
             height: 100%;
-            padding: 16px;
+            padding: 18px;
             font-size: 17px;
             line-height: 1.6;
             border: none;
             resize: none;
             outline: none;
             font-family: inherit;
+            background: transparent;
         }
 
         #layer1 {
@@ -379,6 +375,8 @@
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            min-height: 100%;
             background-color: #ffffff;
             color: #000000;
             transition: opacity 0.25s ease-in-out;
@@ -392,9 +390,10 @@
 </head>
 <body>
 
+    <!-- 1. 목록 화면 -->
     <div id="listView" class="view active">
         <div class="header">
-            <span class="header-title">메모</span>
+            <span class="header-title">스위치 메모</span>
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="switchViewMode('list')">목록</button>
                 <button class="tab-btn" onclick="switchViewMode('calendar')">캘린더</button>
@@ -405,9 +404,10 @@
         <div id="memoList" class="memo-list"></div>
     </div>
 
+    <!-- 1-2. 캘린더 화면 -->
     <div id="calendarView" class="view">
         <div class="header">
-            <span class="header-title">메모</span>
+            <span class="header-title">스위치 메모</span>
             <div class="nav-tabs">
                 <button class="tab-btn" onclick="switchViewMode('list')">목록</button>
                 <button class="tab-btn active" onclick="switchViewMode('calendar')">캘린더</button>
@@ -419,7 +419,7 @@
             <span id="calendarMonthTitle"></span>
             <button class="btn" onclick="changeMonth(1)">▶</button>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px;">
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 2px;">
             <div class="calendar-day-name" style="color:#ff3b30;">일</div>
             <div class="calendar-day-name">월</div>
             <div class="calendar-day-name">화</div>
@@ -431,63 +431,42 @@
         <div id="calendarGrid" class="calendar-grid"></div>
     </div>
 
+    <!-- 날짜 클릭 시 뜨는 해당 일자 메모 목록 팝업 -->
     <div id="dateModal" class="modal-overlay" onclick="closeDateModal()">
-        <div class="modal-card" onclick="event.stopPropagation()" style="max-width:350px; max-height:80vh; padding:0; text-align:left;">
+        <div class="modal-card" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <span id="modalDateTitle">날짜별 메모</span>
                 <button class="btn" style="padding: 4px 10px; font-size: 13px;" onclick="closeDateModal()">닫기</button>
             </div>
-            <div id="modalMemoList" class="modal-body" style="padding:16px; overflow-y:auto;"></div>
-            <div class="modal-footer" style="padding:12px 16px; border-top:1px solid #e5e5ea;">
-                <button class="btn btn-primary" style="width: 100%;" onclick="createNewMemoForSelectedDate()">이 날짜에 새 메모 작성</button>
-            </div>
+            <div id="modalMemoList" class="modal-body"></div>
         </div>
     </div>
 
-    <!-- 비밀번호 입력 팝업 (검정 화면 보려 할 때) -->
-    <div id="pinModal" class="modal-overlay">
-        <div class="modal-card">
-            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">비밀번호 입력</h3>
-            <p style="font-size: 13px; color: #8e8e93; margin-bottom: 10px;">원본(검정) 화면을 보려면 4자리 비밀번호를 입력하세요.<br>(초기 비밀번호: 0000)</p>
-            <div class="pin-dots">
-                <div class="pin-dot" id="dot0"></div>
-                <div class="pin-dot" id="dot1"></div>
-                <div class="pin-dot" id="dot2"></div>
-                <div class="pin-dot" id="dot3"></div>
-            </div>
-            <div class="pin-keypad">
-                <button class="pin-key" onclick="pressPin('1')">1</button>
-                <button class="pin-key" onclick="pressPin('2')">2</button>
-                <button class="pin-key" onclick="pressPin('3')">3</button>
-                <button class="pin-key" onclick="pressPin('4')">4</button>
-                <button class="pin-key" onclick="pressPin('5')">5</button>
-                <button class="pin-key" onclick="pressPin('6')">6</button>
-                <button class="pin-key" onclick="pressPin('7')">7</button>
-                <button class="pin-key" onclick="pressPin('8')">8</button>
-                <button class="pin-key" onclick="pressPin('9')">9</button>
-                <button class="pin-key" onclick="clearPin()" style="font-size: 15px; color: #ff3b30;">지우기</button>
-                <button class="pin-key" onclick="pressPin('0')">0</button>
-                <button class="pin-key" onclick="cancelPin()" style="font-size: 15px; color: #8e8e93;">취소</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- 2. 메모 편집 화면 -->
     <div id="editorView" class="view">
-        <div class="header">
+        <div class="header" style="position: relative;">
             <button class="btn" onclick="goBackFromEditor()">＜ 뒤로</button>
             <div class="editor-header-right">
-                <button class="btn" onclick="exportCurrentMemo()">내보내기</button>
+                <!-- 우측 상단 점 3개 메뉴 버튼 -->
+                <button class="btn btn-icon" onclick="toggleMenuDropdown(event)" style="padding: 8px 12px; font-size: 16px;">•••</button>
                 
-                <!-- iOS 설정 스타일 알약 토글 스위치 -->
+                <!-- iOS 설정 스타일 알약 토글 스위치 (비밀번호 없음) -->
                 <div class="ios-switch" id="toggleSwitch" onclick="handleToggleClick()">
                     <div class="ios-switch-thumb"></div>
                 </div>
             </div>
+
+            <!-- 점 3개 누르면 나오는 드롭다운 메뉴 -->
+            <div id="menuDropdown" class="menu-dropdown">
+                <button class="menu-item-btn" onclick="exportCurrentMemo()">내보내기 (.txt)</button>
+                <button class="menu-item-btn" onclick="deleteCurrentMemo()">메모 삭제</button>
+            </div>
         </div>
 
-        <div class="editor-container">
-            <textarea id="layer1" oninput="autoSave()"></textarea>
-            <textarea id="layer2" oninput="autoSave()"></textarea>
+        <div class="editor-container" id="editorContainer">
+            <!-- 입력할수록 자연스럽게 길어지는 textarea -->
+            <textarea id="layer1" placeholder="힘든 마음을 솔직하게 적어보세요..." oninput="autoSave(); autoResizeTextarea(this)"></textarea>
+            <textarea id="layer2" placeholder="따뜻한 긍정으로 덮어주세요..." oninput="autoSave(); autoResizeTextarea(this)"></textarea>
         </div>
     </div>
 
@@ -498,9 +477,6 @@
         let currentCalendarDate = new Date();
         let previousView = 'list';
         let selectedModalDateStr = null;
-
-        let userPin = localStorage.getItem('memo_pin') || '0000';
-        let enteredPin = '';
 
         window.onload = function() {
             try {
@@ -514,6 +490,7 @@
         };
 
         function switchViewMode(mode) {
+            closeMenuDropdown();
             if (mode === 'list') {
                 document.getElementById('calendarView').classList.remove('active');
                 document.getElementById('listView').classList.add('active');
@@ -552,16 +529,14 @@
                 const item = document.createElement('div');
                 item.className = 'memo-item';
                 
-                const previewText = getFirstLine(memo.layer2) || getFirstLine(memo.layer1) || "(빈 메모)";
+                const previewText = memo.layer2 || memo.layer1 || "(빈 메모)";
                 const formattedDate = formatDate(memo.updatedAt);
 
                 item.innerHTML = `
-                    <div class="memo-info" onclick="openMemo('${memo.id}', 'list')">
-                        <div class="memo-preview">${escapeHtml(previewText)}</div>
-                        <div class="memo-date">${formattedDate}</div>
-                    </div>
-                    <button class="btn-delete" onclick="deleteMemo(event, '${memo.id}')">삭제</button>
+                    <div class="memo-preview">${escapeHtml(previewText)}</div>
+                    <div class="memo-date">${formattedDate}</div>
                 `;
+                item.onclick = () => openMemo(memo.id, 'list');
                 listContainer.appendChild(item);
             });
         }
@@ -589,23 +564,19 @@
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const memosForDay = memos.filter(m => m.updatedAt.startsWith(dateStr));
                 
-                let stackHTML = '';
+                let previewHTML = '';
                 if (memosForDay.length > 0) {
-                    stackHTML = '<div class="memo-stack">';
-                    memosForDay.forEach((memo, index) => {
-                        const text = memo.layer2 || memo.layer1 || '(빈 메모)';
-                        const previewLine = getFirstLine(text);
-                        const opacityVal = Math.max(0.5, 1 - (index * 0.15));
-                        
-                        stackHTML += `<div class="calendar-cell-preview" style="opacity: ${opacityVal};" onclick="event.stopPropagation(); openMemo('${memo.id}', 'calendar')">${escapeHtml(previewLine)}</div>`;
-                    });
-                    stackHTML += '</div>';
+                    // 당일 제일 최근에 입력된 메모 딱 1개만 표시
+                    memosForDay.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                    const latestMemo = memosForDay[0];
+                    const text = latestMemo.layer2 || latestMemo.layer1 || '(빈 메모)';
+                    previewHTML = `<div class="calendar-cell-preview">${escapeHtml(text)}</div>`;
                 }
 
                 cellsHTML += `
                     <div class="calendar-cell" onclick="openDateModal('${dateStr}')">
                         <div class="calendar-date-num">${day}</div>
-                        ${stackHTML}
+                        ${previewHTML}
                     </div>
                 `;
             }
@@ -624,7 +595,10 @@
             const title = document.getElementById('modalDateTitle');
             const list = document.getElementById('modalMemoList');
 
-            title.innerText = `${dateStr} 메모`;
+            // 날짜 예쁘게 포맷팅 (예: 2026년 10월 26일)
+            const dObj = new Date(dateStr);
+            const prettyDateStr = `${dObj.getFullYear()}년 ${dObj.getMonth() + 1}월 ${dObj.getDate()}일`;
+            title.innerText = prettyDateStr;
             list.innerHTML = '';
 
             const memosForDay = memos.filter(m => m.updatedAt.startsWith(dateStr));
@@ -634,19 +608,20 @@
                 list.innerHTML = '<div style="text-align:center; color:#8e8e93; padding: 20px;">이 날짜에 작성된 메모가 없습니다.</div>';
             } else {
                 memosForDay.forEach(memo => {
-                    const preview = getFirstLine(memo.layer2) || getFirstLine(memo.layer1) || "(빈 메모)";
+                    const preview = memo.layer2 || memo.layer1 || "(빈 메모)";
                     const timeStr = new Date(memo.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
                     
                     const div = document.createElement('div');
                     div.className = 'memo-item';
-                    div.style.marginBottom = '6px';
+                    div.style.cursor = 'pointer';
                     div.innerHTML = `
-                        <div class="memo-info" onclick="closeDateModal(); openMemo('${memo.id}', 'calendar')">
-                            <div class="memo-preview">${escapeHtml(preview)}</div>
-                            <div class="memo-date">${timeStr}</div>
-                        </div>
-                        <button class="btn-delete" onclick="deleteMemoInModal(event, '${memo.id}', '${dateStr}')">삭제</button>
+                        <div class="memo-preview">${escapeHtml(preview)}</div>
+                        <div class="memo-date">${timeStr}</div>
                     `;
+                    div.onclick = () => {
+                        closeDateModal();
+                        openMemo(memo.id, 'calendar');
+                    };
                     list.appendChild(div);
                 });
             }
@@ -658,53 +633,38 @@
             document.getElementById('dateModal').classList.remove('active');
         }
 
-        function deleteMemoInModal(event, id, dateStr) {
-            event.stopPropagation();
-            if (confirm('이 메모를 삭제하시겠습니까?')) {
-                memos = memos.filter(m => m.id !== id);
-                saveToStorage();
-                renderMemoList();
-                renderCalendar();
-                openDateModal(dateStr);
-            }
-        }
-
         function createNewMemo(fromView) {
+            closeMenuDropdown();
+            const now = new Date();
             const newMemo = {
                 id: 'memo_' + Date.now(),
                 layer1: '',
                 layer2: '',
-                updatedAt: new Date().toISOString()
+                updatedAt: now.toISOString()
             };
             memos.unshift(newMemo);
             saveToStorage();
             openMemo(newMemo.id, fromView);
         }
 
-        function createNewMemoForSelectedDate() {
-            closeDateModal();
-            const newMemo = {
-                id: 'memo_' + Date.now(),
-                layer1: '',
-                layer2: '',
-                updatedAt: `${selectedModalDateStr}T${new Date().toTimeString().split(' ')[0]}.000Z`
-            };
-            memos.unshift(newMemo);
-            saveToStorage();
-            openMemo(newMemo.id, 'calendar');
-        }
-
         function openMemo(id, fromView) {
+            closeMenuDropdown();
             currentMemoId = id;
             previousView = fromView || 'list';
             const memo = memos.find(m => m.id === id);
             if (!memo) return;
 
-            document.getElementById('layer1').value = memo.layer1 || '';
-            document.getElementById('layer2').value = memo.layer2 || '';
+            const t1 = document.getElementById('layer1');
+            const t2 = document.getElementById('layer2');
+            t1.value = memo.layer1 || '';
+            t2.value = memo.layer2 || '';
+
+            // 텍스트 양에 맞춰 textarea 높이 자동 조절
+            autoResizeTextarea(t1);
+            autoResizeTextarea(t2);
 
             isLayer2Visible = true;
-            document.getElementById('layer2').classList.remove('hidden');
+            t2.classList.remove('hidden');
             updateUI();
 
             document.getElementById('listView').classList.remove('active');
@@ -713,6 +673,7 @@
         }
 
         function goBackFromEditor() {
+            closeMenuDropdown();
             autoSave();
             currentMemoId = null;
             document.getElementById('editorView').classList.remove('active');
@@ -730,14 +691,49 @@
             }
         }
 
-        function deleteMemo(event, id) {
+        // 점 3개 메뉴 토글
+        function toggleMenuDropdown(event) {
             event.stopPropagation();
+            const dropdown = document.getElementById('menuDropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function closeMenuDropdown() {
+            const dropdown = document.getElementById('menuDropdown');
+            if (dropdown) dropdown.classList.remove('active');
+        }
+
+        // 화면 바깥 누르면 메뉴 닫히기
+        window.onclick = function() {
+            closeMenuDropdown();
+        };
+
+        // 편집 페이지에서 삭제하기
+        function deleteCurrentMemo() {
+            closeMenuDropdown();
             if (confirm('이 메모를 삭제하시겠습니까?')) {
-                memos = memos.filter(m => m.id !== id);
+                memos = memos.filter(m => m.id !== currentMemoId);
                 saveToStorage();
-                renderMemoList();
-                renderCalendar();
+                currentMemoId = null;
+                document.getElementById('editorView').classList.remove('active');
+                
+                if (previousView === 'calendar') {
+                    document.getElementById('calendarView').classList.add('active');
+                    renderCalendar();
+                    if (selectedModalDateStr) {
+                        openDateModal(selectedModalDateStr);
+                    }
+                } else {
+                    document.getElementById('listView').classList.add('active');
+                    renderMemoList();
+                }
             }
+        }
+
+        // 엔터 칠수록 점점 입력칸이 길어지도록 자동 조절하는 함수
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
         }
 
         function autoSave() {
@@ -757,6 +753,7 @@
         }
 
         function exportCurrentMemo() {
+            closeMenuDropdown();
             if (!currentMemoId) return;
             const memo = memos.find(m => m.id === currentMemoId);
             if (!memo) return;
@@ -772,12 +769,10 @@
             URL.revokeObjectURL(url);
         }
 
+        // 스위치 클릭 시 비밀번호 없이 즉시 전환
         function handleToggleClick() {
-            if (isLayer2Visible) {
-                openPinModal();
-            } else {
-                setLayerState(true);
-            }
+            closeMenuDropdown();
+            setLayerState(!isLayer2Visible);
         }
 
         function setLayerState(visible) {
@@ -799,52 +794,6 @@
             } else {
                 toggleSwitch.classList.add('off');
             }
-        }
-
-        function openPinModal() {
-            enteredPin = '';
-            updatePinDots();
-            document.getElementById('pinModal').classList.add('active');
-        }
-        function cancelPin() {
-            document.getElementById('pinModal').classList.remove('active');
-        }
-        function clearPin() {
-            enteredPin = '';
-            updatePinDots();
-        }
-        function pressPin(digit) {
-            if (enteredPin.length < 4) {
-                enteredPin += digit;
-                updatePinDots();
-                if (enteredPin.length === 4) {
-                    setTimeout(() => {
-                        if (enteredPin === userPin) {
-                            cancelPin();
-                            setLayerState(false);
-                        } else {
-                            alert('비밀번호가 틀렸습니다.');
-                            clearPin();
-                        }
-                    }, 150);
-                }
-            }
-        }
-        function updatePinDots() {
-            for (let i = 0; i < 4; i++) {
-                const dot = document.getElementById(`dot${i}`);
-                if (i < enteredPin.length) {
-                    dot.classList.add('filled');
-                } else {
-                    dot.classList.remove('filled');
-                }
-            }
-        }
-
-        function getFirstLine(text) {
-            if (!text) return '';
-            const lines = text.trim().split('\n');
-            return lines[0] || '';
         }
 
         function formatDate(isoString) {
