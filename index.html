@@ -93,14 +93,41 @@
             color: #ffffff;
         }
 
-        .btn-icon {
-            padding: 6px 12px;
-            font-size: 18px;
-            background-color: #ffffff;
+        .btn:active { transform: scale(0.96); }
+
+        /* 아이폰 설정 스타일 알약 토글 스위치 */
+        .ios-switch {
+            position: relative;
+            width: 54px;
+            height: 31px;
+            background-color: #e5e5ea; /* 기본 회색 배경 */
+            border-radius: 31px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            padding: 2px;
             border: 1px solid #d1d1d6;
         }
 
-        .btn:active { transform: scale(0.96); }
+        .ios-switch-thumb {
+            width: 27px;
+            height: 27px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 3px 1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s cubic-bezier(0.15, 0.85, 0.35, 1.2), background-color 0.3s;
+            transform: translateX(23px); /* 켜진 상태 (오른쪽: 흰색 원 + 회색 배경) */
+        }
+
+        /* 스위치가 꺼졌을 때 (검정 원본 모드: 왼쪽 이동 + 검정 원 + 회색 배경) */
+        .ios-switch.off {
+            background-color: #e5e5ea;
+        }
+        .ios-switch.off .ios-switch-thumb {
+            transform: translateX(0px); 
+            background-color: #000000; 
+        }
 
         .editor-header-right {
             display: flex;
@@ -252,7 +279,7 @@
             width: 100%;
         }
 
-        /* 날짜 클릭 시 뜨는 모달(팝업) 스타일 */
+        /* 공통 모달 팝업 스타일 */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -270,34 +297,54 @@
             background-color: #ffffff;
             border-radius: 14px;
             width: 100%;
-            max-width: 350px;
-            max-height: 80vh;
+            max-width: 330px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            text-align: center;
         }
-        .modal-header {
-            padding: 16px;
-            font-size: 17px;
-            font-weight: 700;
-            border-bottom: 1px solid #e5e5ea;
+
+        /* 비밀번호 입력창 스타일 */
+        .pin-dots {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
         }
-        .modal-body {
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+        .pin-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #007aff;
+            background-color: transparent;
+            transition: background-color 0.2s;
+        }
+        .pin-dot.filled {
+            background-color: #007aff;
+        }
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
-        .modal-footer {
-            padding: 12px 16px;
-            border-top: 1px solid #e5e5ea;
+        .pin-key {
+            background-color: #f2f2f7;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
             display: flex;
-            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+        .pin-key:active {
+            background-color: #d1d1d6;
         }
 
         /* 에디터 스타일 */
@@ -345,7 +392,6 @@
 </head>
 <body>
 
-    <!-- 1. 목록 화면 -->
     <div id="listView" class="view active">
         <div class="header">
             <span class="header-title">메모</span>
@@ -359,7 +405,6 @@
         <div id="memoList" class="memo-list"></div>
     </div>
 
-    <!-- 1-2. 캘린더 화면 -->
     <div id="calendarView" class="view">
         <div class="header">
             <span class="header-title">메모</span>
@@ -386,27 +431,57 @@
         <div id="calendarGrid" class="calendar-grid"></div>
     </div>
 
-    <!-- 날짜 클릭 시 뜨는 해당 일자 메모 목록 팝업 -->
     <div id="dateModal" class="modal-overlay" onclick="closeDateModal()">
-        <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-card" onclick="event.stopPropagation()" style="max-width:350px; max-height:80vh; padding:0; text-align:left;">
             <div class="modal-header">
                 <span id="modalDateTitle">날짜별 메모</span>
                 <button class="btn" style="padding: 4px 10px; font-size: 13px;" onclick="closeDateModal()">닫기</button>
             </div>
-            <div id="modalMemoList" class="modal-body"></div>
-            <div class="modal-footer">
+            <div id="modalMemoList" class="modal-body" style="padding:16px; overflow-y:auto;"></div>
+            <div class="modal-footer" style="padding:12px 16px; border-top:1px solid #e5e5ea;">
                 <button class="btn btn-primary" style="width: 100%;" onclick="createNewMemoForSelectedDate()">이 날짜에 새 메모 작성</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. 메모 편집 화면 -->
+    <!-- 비밀번호 입력 팝업 (검정 화면 보려 할 때) -->
+    <div id="pinModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">비밀번호 입력</h3>
+            <p style="font-size: 13px; color: #8e8e93; margin-bottom: 10px;">원본(검정) 화면을 보려면 4자리 비밀번호를 입력하세요.<br>(초기 비밀번호: 0000)</p>
+            <div class="pin-dots">
+                <div class="pin-dot" id="dot0"></div>
+                <div class="pin-dot" id="dot1"></div>
+                <div class="pin-dot" id="dot2"></div>
+                <div class="pin-dot" id="dot3"></div>
+            </div>
+            <div class="pin-keypad">
+                <button class="pin-key" onclick="pressPin('1')">1</button>
+                <button class="pin-key" onclick="pressPin('2')">2</button>
+                <button class="pin-key" onclick="pressPin('3')">3</button>
+                <button class="pin-key" onclick="pressPin('4')">4</button>
+                <button class="pin-key" onclick="pressPin('5')">5</button>
+                <button class="pin-key" onclick="pressPin('6')">6</button>
+                <button class="pin-key" onclick="pressPin('7')">7</button>
+                <button class="pin-key" onclick="pressPin('8')">8</button>
+                <button class="pin-key" onclick="pressPin('9')">9</button>
+                <button class="pin-key" onclick="clearPin()" style="font-size: 15px; color: #ff3b30;">지우기</button>
+                <button class="pin-key" onclick="pressPin('0')">0</button>
+                <button class="pin-key" onclick="cancelPin()" style="font-size: 15px; color: #8e8e93;">취소</button>
+            </div>
+        </div>
+    </div>
+
     <div id="editorView" class="view">
         <div class="header">
             <button class="btn" onclick="goBackFromEditor()">＜ 뒤로</button>
             <div class="editor-header-right">
                 <button class="btn" onclick="exportCurrentMemo()">내보내기</button>
-                <button class="btn btn-icon" id="toggleBtn" onclick="toggleLayer()">⬜</button>
+                
+                <!-- iOS 설정 스타일 알약 토글 스위치 -->
+                <div class="ios-switch" id="toggleSwitch" onclick="handleToggleClick()">
+                    <div class="ios-switch-thumb"></div>
+                </div>
             </div>
         </div>
 
@@ -421,8 +496,11 @@
         let currentMemoId = null;
         let isLayer2Visible = true;
         let currentCalendarDate = new Date();
-        let previousView = 'list'; // 어디서 진입했는지 기억 (list 또는 calendar)
+        let previousView = 'list';
         let selectedModalDateStr = null;
+
+        let userPin = localStorage.getItem('memo_pin') || '0000';
+        let enteredPin = '';
 
         window.onload = function() {
             try {
@@ -540,7 +618,6 @@
             renderCalendar();
         }
 
-        // 특정 날짜 셀을 눌렀을 때 해당 날짜의 메모 목록 팝업 열기
         function openDateModal(dateStr) {
             selectedModalDateStr = dateStr;
             const modal = document.getElementById('dateModal');
@@ -588,7 +665,7 @@
                 saveToStorage();
                 renderMemoList();
                 renderCalendar();
-                openDateModal(dateStr); // 팝업창 목록 갱신
+                openDateModal(dateStr);
             }
         }
 
@@ -606,7 +683,6 @@
 
         function createNewMemoForSelectedDate() {
             closeDateModal();
-            // 선택한 날짜의 시간대로 새 메모 생성
             const newMemo = {
                 id: 'memo_' + Date.now(),
                 layer1: '',
@@ -620,7 +696,7 @@
 
         function openMemo(id, fromView) {
             currentMemoId = id;
-            previousView = fromView || 'list'; // 어디서 들어왔는지 저장
+            previousView = fromView || 'list';
             const memo = memos.find(m => m.id === id);
             if (!memo) return;
 
@@ -636,7 +712,6 @@
             document.getElementById('editorView').classList.add('active');
         }
 
-        // 진입했던 경로에 따라 정확히 되돌아가기
         function goBackFromEditor() {
             autoSave();
             currentMemoId = null;
@@ -645,7 +720,6 @@
             if (previousView === 'calendar') {
                 document.getElementById('calendarView').classList.add('active');
                 renderCalendar();
-                // 만약 날짜 팝업창에서 들어온 거였다면 팝업을 다시 띄워줄 수도 있음
                 if (selectedModalDateStr) {
                     openDateModal(selectedModalDateStr);
                 }
@@ -698,8 +772,16 @@
             URL.revokeObjectURL(url);
         }
 
-        function toggleLayer() {
-            isLayer2Visible = !isLayer2Visible;
+        function handleToggleClick() {
+            if (isLayer2Visible) {
+                openPinModal();
+            } else {
+                setLayerState(true);
+            }
+        }
+
+        function setLayerState(visible) {
+            isLayer2Visible = visible;
             const layer2 = document.getElementById('layer2');
 
             if (isLayer2Visible) {
@@ -711,11 +793,51 @@
         }
 
         function updateUI() {
-            const toggleBtn = document.getElementById('toggleBtn');
+            const toggleSwitch = document.getElementById('toggleSwitch');
             if (isLayer2Visible) {
-                toggleBtn.innerText = "⬜";
+                toggleSwitch.classList.remove('off');
             } else {
-                toggleBtn.innerText = "⬛";
+                toggleSwitch.classList.add('off');
+            }
+        }
+
+        function openPinModal() {
+            enteredPin = '';
+            updatePinDots();
+            document.getElementById('pinModal').classList.add('active');
+        }
+        function cancelPin() {
+            document.getElementById('pinModal').classList.remove('active');
+        }
+        function clearPin() {
+            enteredPin = '';
+            updatePinDots();
+        }
+        function pressPin(digit) {
+            if (enteredPin.length < 4) {
+                enteredPin += digit;
+                updatePinDots();
+                if (enteredPin.length === 4) {
+                    setTimeout(() => {
+                        if (enteredPin === userPin) {
+                            cancelPin();
+                            setLayerState(false);
+                        } else {
+                            alert('비밀번호가 틀렸습니다.');
+                            clearPin();
+                        }
+                    }, 150);
+                }
+            }
+        }
+        function updatePinDots() {
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i < enteredPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
             }
         }
 
