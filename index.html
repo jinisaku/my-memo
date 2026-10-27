@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Switch Memo</title>
+    <title>스위치 메모</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Switch Memo">
+    <meta name="apple-mobile-web-app-title" content="스위치 메모">
     <link rel="apple-touch-icon" href="Gemini_Generated_Image_qaixvtqaixvtqaix.png">
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            background-color: #EEE7DD; /* 따뜻한 아이보리 배경 */
-            color: #2c2c2e;
+            background-color: #f2f2f7;
+            color: #000000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             height: 100vh;
             height: -webkit-fill-available;
@@ -28,7 +28,6 @@
             flex-direction: column;
             height: 100%;
             padding: 16px;
-            position: relative;
         }
         .view.active {
             display: flex;
@@ -38,165 +37,113 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e5e5ea;
             margin-bottom: 12px;
         }
 
         .header-title {
             font-size: 22px;
             font-weight: 700;
-            color: #2c2c2e;
+            color: #000000;
         }
 
-        /* 우측 상단 아이콘 그룹 스타일 */
-        .header-icons {
+        .nav-tabs {
             display: flex;
-            align-items: center;
-            background-color: #ffffff;
-            border-radius: 20px;
-            padding: 4px 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-            gap: 8px;
+            background-color: #e5e5ea;
+            border-radius: 8px;
+            padding: 2px;
+            gap: 2px;
         }
 
-        .icon-btn {
+        .tab-btn {
             background: none;
             border: none;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2c2c2e;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-        .icon-btn:active {
-            background-color: #EEE7DD;
-        }
-        .icon-btn.active-icon {
-            color: #d99a36; /* 활성화 아이콘 주황 포인트 */
+            color: #3a3a3c;
         }
 
-        /* 공통 버튼 */
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #007aff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
         .btn {
-            background-color: #F6C36A;
-            color: #ffffff;
+            background-color: #e5e5ea;
+            color: #007aff;
             border: none;
             padding: 8px 14px;
             font-size: 15px;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 6px rgba(246, 195, 106, 0.3);
         }
+
+        .btn-primary {
+            background-color: #007aff;
+            color: #ffffff;
+        }
+
         .btn:active { transform: scale(0.96); }
 
-        /* 우측 하단 플로팅 + 새 메모 버튼 */
-        .floating-add-btn {
-            position: absolute;
-            bottom: 24px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            background-color: #F6C36A;
-            color: #ffffff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 12px rgba(246, 195, 106, 0.4);
-            border: none;
-            cursor: pointer;
-            z-index: 100;
-            transition: transform 0.2s;
-        }
-        .floating-add-btn:active { transform: scale(0.9); }
-
-        /* 아이폰 설정 스타일 알약 토글 스위치 */
+        /* 아이폰 설정 스타일 알약 토글 스위치 (비밀번호 기능 제거 버전) */
         .ios-switch {
             position: relative;
-            width: 50px;
-            height: 28px;
-            background-color: #d1d1d6;
-            border-radius: 28px;
+            width: 54px;
+            height: 31px;
+            background-color: #e5e5ea;
+            border-radius: 31px;
             cursor: pointer;
             transition: background-color 0.3s;
             display: flex;
             align-items: center;
             padding: 2px;
+            border: 1px solid #d1d1d6;
         }
 
         .ios-switch-thumb {
-            width: 24px;
-            height: 24px;
+            width: 27px;
+            height: 27px;
             background-color: #ffffff;
             border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 3px 1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s cubic-bezier(0.15, 0.85, 0.35, 1.2), background-color 0.3s;
-            transform: translateX(22px);
+            transform: translateX(23px); /* 켜진 상태 (흰색 배경 모드) */
         }
 
         .ios-switch.off {
-            background-color: #b0b0b5;
+            background-color: #e5e5ea;
         }
         .ios-switch.off .ios-switch-thumb {
-            transform: translateX(0px);
+            transform: translateX(0px); /* 꺼진 상태 (검정 원본 모드) */
             background-color: #000000;
         }
 
-        /* 검색창 */
+        .editor-header-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         .search-box {
             width: 100%;
             padding: 10px 14px;
             font-size: 15px;
-            background-color: #FDFBF7;
-            border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 12px;
-            outline: none;
-            margin-bottom: 12px;
-            color: #2c2c2e;
-        }
-
-        /* 목록 화면 바로 입력하는 인라인 작성 박스 */
-        .inline-input-box {
-            background-color: #FDFBF7;
-            border-radius: 14px;
-            padding: 14px;
-            border: 1px solid #F6C36A;
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-        }
-        .inline-input-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .inline-textarea {
-            width: 100%;
-            min-height: 70px;
-            background: transparent;
+            background-color: #e5e5ea;
             border: none;
+            border-radius: 10px;
             outline: none;
-            font-size: 15px;
-            resize: none;
-            font-family: inherit;
-            color: #2c2c2e;
-        }
-        .inline-footer {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 12px;
+            color: #000;
         }
 
         .memo-list {
@@ -205,63 +152,28 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-bottom: 70px;
         }
 
-        /* 메모 아이템 카드 (따뜻한 아이보리 톤) */
+        /* 목록 아이템 디자인 수정 (미리보기 최대 10줄 지원) */
         .memo-item {
-            background-color: #FDFBF7;
-            border-radius: 14px;
+            background-color: #ffffff;
+            border-radius: 12px;
             padding: 16px;
             cursor: pointer;
             display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.06);
-            transition: background 0.2s;
-        }
-        .memo-item:active {
-            background-color: #f7f3ec;
-        }
-
-        /* 다중 선택 체크박스 */
-        .memo-checkbox {
-            display: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #b0b0b5;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .select-mode .memo-checkbox {
-            display: flex;
-        }
-        .memo-item.selected .memo-checkbox {
-            background-color: #F6C36A;
-            border-color: #F6C36A;
-            color: #fff;
-        }
-
-        .memo-content-wrap {
-            flex: 1;
-            display: flex;
             flex-direction: column;
             gap: 6px;
-            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e5e5ea;
         }
 
         .memo-preview {
             font-size: 15px;
             font-weight: 500;
-            color: #2c2c2e;
+            color: #000000;
             line-height: 1.4;
             display: -webkit-box;
-            -webkit-line-clamp: 10;
+            -webkit-line-clamp: 10; /* 최대 10줄 표시 후 ... 생략 */
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -281,7 +193,7 @@
             line-height: 1.5;
         }
 
-        /* 캘린더 페이지 스타일 */
+        /* 캘린더 페이지 스타일 개편 (아이폰 스타일 칸막이 제거 & 넓은 시야) */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -289,7 +201,6 @@
             margin-bottom: 12px;
             font-size: 18px;
             font-weight: 700;
-            color: #2c2c2e;
         }
 
         .calendar-grid {
@@ -298,7 +209,6 @@
             gap: 6px 2px;
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 70px;
         }
 
         .calendar-day-name {
@@ -310,7 +220,7 @@
         }
 
         .calendar-cell {
-            background-color: transparent;
+            background-color: transparent; /* 칸막이 테두리 제거 */
             border-radius: 6px;
             padding: 2px;
             min-height: 90px;
@@ -330,14 +240,15 @@
             font-weight: 600;
             margin-bottom: 4px;
             text-align: center;
-            color: #2c2c2e;
+            color: #1c1c1e;
         }
 
+        /* 캘린더 날짜 안에는 최신 메모 딱 1개만, 칸에 다 차도록 스타일링 */
         .calendar-cell-preview {
             font-size: 11px;
             font-weight: 500;
-            color: #8a5a00;
-            background-color: rgba(246, 195, 106, 0.25);
+            color: #004085;
+            background-color: #cce5ff;
             border-radius: 4px;
             padding: 3px 5px;
             overflow: hidden;
@@ -349,7 +260,7 @@
             line-height: 1.3;
         }
 
-        /* 모달 팝업 */
+        /* 모달 팝업 스타일 (예쁘게 정돈) */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -364,7 +275,7 @@
             display: flex;
         }
         .modal-card {
-            background-color: #FDFBF7;
+            background-color: #ffffff;
             border-radius: 16px;
             width: 100%;
             max-width: 340px;
@@ -378,7 +289,7 @@
             padding: 16px 20px;
             font-size: 17px;
             font-weight: 700;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            border-bottom: 1px solid #e5e5ea;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -391,20 +302,20 @@
             gap: 10px;
         }
 
-        /* 드롭다운 메뉴 (우측 상단 점 3개) */
+        /* 점 3개(메뉴) 드롭다운 팝업 스타일 */
         .menu-dropdown {
             position: absolute;
             top: 55px;
             right: 16px;
-            background-color: #FDFBF7;
+            background-color: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            width: 170px;
+            width: 160px;
             display: none;
             flex-direction: column;
             overflow: hidden;
             z-index: 500;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid #e5e5ea;
         }
         .menu-dropdown.active {
             display: flex;
@@ -417,63 +328,34 @@
             font-size: 15px;
             font-weight: 500;
             cursor: pointer;
-            color: #2c2c2e;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: #000;
+            border-bottom: 1px solid #f2f2f7;
         }
         .menu-item-btn:last-child {
             border-bottom: none;
-            color: #ff3b30;
+            color: #ff3b30; /* 삭제는 빨간색 포인트 */
         }
         .menu-item-btn:active {
-            background-color: #EEE7DD;
+            background-color: #f2f2f7;
         }
 
-        /* 하단 다중선택 액션 바 */
-        .selection-action-bar {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%;
-            background-color: #FDFBF7;
-            border-top: 1px solid rgba(0,0,0,0.08);
-            padding: 12px 20px;
-            display: none;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 200;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
-        }
-        .selection-action-bar.active {
-            display: flex;
-        }
-        .action-bar-btn {
-            background: none;
-            border: none;
-            font-size: 15px;
-            font-weight: 600;
-            color: #007aff;
-            cursor: pointer;
-            padding: 6px 12px;
-        }
-        .action-bar-btn.danger {
-            color: #ff3b30;
-        }
-
-        /* 메모 편집 화면 스타일 (리미트 풀고 화면 가득 채우기) */
+        /* 편집 화면 스타일 (기본 높이 2배 확대 & 자동 늘어나기) */
         .editor-container {
             position: relative;
             flex: 1;
             border-radius: 12px;
             overflow-y: auto;
             background-color: #000000;
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid #d1d1d6;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            margin-bottom: 10px;
         }
 
         textarea {
             width: 100%;
-            min-height: 100%;
+            min-height: 280px; /* 기본 작성칸 2배 이상 넉넉하게 확장 */
+            height: 100%;
             padding: 18px;
             font-size: 17px;
             line-height: 1.6;
@@ -495,8 +377,8 @@
             left: 0;
             width: 100%;
             min-height: 100%;
-            background-color: #FDFBF7; /* 편집창 흰색 배경을 따뜻한 아이보리로 */
-            color: #2c2c2e;
+            background-color: #ffffff;
+            color: #000000;
             transition: opacity 0.25s ease-in-out;
         }
 
@@ -510,76 +392,32 @@
 
     <!-- 1. 목록 화면 -->
     <div id="listView" class="view active">
-        <div class="header" style="position: relative;">
-            <span class="header-title">Switch Memo</span>
-            <!-- 우측 상단 아이콘 네비게이션바 -->
-            <div class="header-icons">
-                <button class="icon-btn active-icon" onclick="switchViewMode('list')" title="목록">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                </button>
-                <button class="icon-btn" onclick="switchViewMode('calendar')" title="캘린더">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                </button>
-                <button class="icon-btn" onclick="toggleMenuDropdown(event)" title="메뉴">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                </button>
+        <div class="header">
+            <span class="header-title">스위치 메모</span>
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchViewMode('list')">목록</button>
+                <button class="tab-btn" onclick="switchViewMode('calendar')">캘린더</button>
             </div>
-
-            <!-- 점 3개 드롭다운 메뉴 -->
-            <div id="menuDropdown" class="menu-dropdown">
-                <button class="menu-item-btn" onclick="enterSelectMode()">메모 선택</button>
-            </div>
+            <button class="btn btn-primary" onclick="createNewMemo('list')">+ 새 메모</button>
         </div>
-
         <input type="text" id="searchInput" class="search-box" placeholder="메모 검색..." oninput="renderMemoList()">
-
-        <!-- 목록 페이지 내 즉시 작성 바 -->
-        <div class="inline-input-box">
-            <div class="inline-input-header">
-                <span style="font-size: 13px; font-weight: 600; color: #8a5a00;">새 메모 바로 쓰기</span>
-                <!-- 새로 입력하는 곳에만 들어가는 스위치 버튼 -->
-                <div class="ios-switch" id="inlineToggleSwitch" onclick="toggleInlineMode()">
-                    <div class="ios-switch-thumb"></div>
-                </div>
-            </div>
-            <textarea id="inlineTextarea" class="inline-textarea" placeholder="이곳에 메모를 적어보세요..." oninput="autoResizeInline(this)"></textarea>
-            <div class="inline-footer">
-                <button class="btn" style="padding: 6px 14px; font-size: 13px;" onclick="saveInlineMemo()">저장</button>
-            </div>
-        </div>
-
         <div id="memoList" class="memo-list"></div>
-        <button class="floating-add-btn" onclick="createNewMemo('list')">+</button>
-
-        <!-- 다중 선택 시 하단 액션 바 -->
-        <div id="selectionActionBar" class="selection-action-bar">
-            <button class="action-bar-btn" onclick="selectAllMemos()">전체 선택</button>
-            <button class="action-bar-btn" onclick="exportSelectedMemos()">내보내기</button>
-            <button class="action-bar-btn danger" onclick="deleteSelectedMemos()">휴지통</button>
-            <button class="action-bar-btn" style="color:#8e8e93;" onclick="exitSelectMode()">취소</button>
-        </div>
     </div>
 
     <!-- 1-2. 캘린더 화면 -->
     <div id="calendarView" class="view">
-        <div class="header" style="position: relative;">
-            <span class="header-title">Switch Memo</span>
-            <div class="header-icons">
-                <button class="icon-btn" onclick="switchViewMode('list')" title="목록">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                </button>
-                <button class="icon-btn active-icon" onclick="switchViewMode('calendar')" title="캘린더">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                </button>
-                <button class="icon-btn" onclick="toggleMenuDropdown(event)" title="메뉴">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                </button>
+        <div class="header">
+            <span class="header-title">스위치 메모</span>
+            <div class="nav-tabs">
+                <button class="tab-btn" onclick="switchViewMode('list')">목록</button>
+                <button class="tab-btn active" onclick="switchViewMode('calendar')">캘린더</button>
             </div>
+            <button class="btn btn-primary" onclick="createNewMemo('calendar')">+ 새 메모</button>
         </div>
         <div class="calendar-header">
-            <button class="btn" style="padding: 6px 12px;" onclick="changeMonth(-1)">◀</button>
+            <button class="btn" onclick="changeMonth(-1)">◀</button>
             <span id="calendarMonthTitle"></span>
-            <button class="btn" style="padding: 6px 12px;" onclick="changeMonth(1)">▶</button>
+            <button class="btn" onclick="changeMonth(1)">▶</button>
         </div>
         <div style="display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 2px;">
             <div class="calendar-day-name" style="color:#ff3b30;">일</div>
@@ -591,7 +429,6 @@
             <div class="calendar-day-name" style="color:#007aff;">토</div>
         </div>
         <div id="calendarGrid" class="calendar-grid"></div>
-        <button class="floating-add-btn" onclick="createNewMemo('calendar')">+</button>
     </div>
 
     <!-- 날짜 클릭 시 뜨는 해당 일자 메모 목록 팝업 -->
@@ -608,21 +445,28 @@
     <!-- 2. 메모 편집 화면 -->
     <div id="editorView" class="view">
         <div class="header" style="position: relative;">
-            <button class="btn" style="padding: 6px 12px;" onclick="goBackFromEditor()">＜ 뒤로</button>
-            <div class="editor-header-right" style="display: flex; gap: 8px; align-items: center;">
-                <button class="btn" onclick="exportCurrentMemo()" style="padding: 6px 12px; font-size: 13px;">내보내기</button>
-                <button class="btn" onclick="deleteCurrentMemo()" style="padding: 6px 12px; font-size: 13px; background-color: #ff3b30;">삭제</button>
+            <button class="btn" onclick="goBackFromEditor()">＜ 뒤로</button>
+            <div class="editor-header-right">
+                <!-- 우측 상단 점 3개 메뉴 버튼 -->
+                <button class="btn btn-icon" onclick="toggleMenuDropdown(event)" style="padding: 8px 12px; font-size: 16px;">•••</button>
                 
-                <!-- iOS 설정 스타일 알약 토글 스위치 -->
+                <!-- iOS 설정 스타일 알약 토글 스위치 (비밀번호 없음) -->
                 <div class="ios-switch" id="toggleSwitch" onclick="handleToggleClick()">
                     <div class="ios-switch-thumb"></div>
                 </div>
             </div>
+
+            <!-- 점 3개 누르면 나오는 드롭다운 메뉴 -->
+            <div id="menuDropdown" class="menu-dropdown">
+                <button class="menu-item-btn" onclick="exportCurrentMemo()">내보내기 (.txt)</button>
+                <button class="menu-item-btn" onclick="deleteCurrentMemo()">메모 삭제</button>
+            </div>
         </div>
 
         <div class="editor-container" id="editorContainer">
-            <textarea id="layer1" placeholder="힘든 마음을 솔직하게 적어보세요..." oninput="autoSave()"></textarea>
-            <textarea id="layer2" placeholder="따뜻한 긍정으로 덮어주세요..." oninput="autoSave()"></textarea>
+            <!-- 입력할수록 자연스럽게 길어지는 textarea -->
+            <textarea id="layer1" placeholder="힘든 마음을 솔직하게 적어보세요..." oninput="autoSave(); autoResizeTextarea(this)"></textarea>
+            <textarea id="layer2" placeholder="따뜻한 긍정으로 덮어주세요..." oninput="autoSave(); autoResizeTextarea(this)"></textarea>
         </div>
     </div>
 
@@ -630,12 +474,9 @@
         let memos = [];
         let currentMemoId = null;
         let isLayer2Visible = true;
-        let isInlineLayer2Visible = true;
         let currentCalendarDate = new Date();
         let previousView = 'list';
         let selectedModalDateStr = null;
-        let isSelectMode = false;
-        let selectedMemoIds = new Set();
 
         window.onload = function() {
             try {
@@ -650,7 +491,6 @@
 
         function switchViewMode(mode) {
             closeMenuDropdown();
-            exitSelectMode();
             if (mode === 'list') {
                 document.getElementById('calendarView').classList.remove('active');
                 document.getElementById('listView').classList.add('active');
@@ -662,64 +502,13 @@
             }
         }
 
-        // 목록 페이지 내 즉시 작성바 스위치 제어
-        function toggleInlineMode() {
-            isInlineLayer2Visible = !isInlineLayer2Visible;
-            const sw = document.getElementById('inlineToggleSwitch');
-            const textarea = document.getElementById('inlineTextarea');
-            if (isInlineLayer2Visible) {
-                sw.classList.remove('off');
-                textarea.style.backgroundColor = '#FDFBF7';
-                textarea.style.color = '#2c2c2e';
-            } else {
-                sw.classList.add('off');
-                textarea.style.backgroundColor = '#000000';
-                textarea.style.color = '#ffffff';
-            }
-        }
-
-        function autoResizeInline(el) {
-            el.style.height = 'auto';
-            el.style.height = (el.scrollHeight) + 'px';
-        }
-
-        function saveInlineMemo() {
-            const textarea = document.getElementById('inlineTextarea');
-            const text = textarea.value.trim();
-            if (!text) {
-                alert('내용을 입력해주세요.');
-                return;
-            }
-
-            const now = new Date();
-            const newMemo = {
-                id: 'memo_' + Date.now(),
-                layer1: isInlineLayer2Visible ? '' : text,
-                layer2: isInlineLayer2Visible ? text : '',
-                updatedAt: now.toISOString()
-            };
-
-            memos.unshift(newMemo);
-            saveToStorage();
-
-            textarea.value = '';
-            textarea.style.height = '70px';
-            isInlineLayer2Visible = true;
-            document.getElementById('inlineToggleSwitch').classList.remove('off');
-            textarea.style.backgroundColor = '#FDFBF7';
-            textarea.style.color = '#2c2c2e';
-
-            renderMemoList();
-            renderCalendar();
-        }
-
         function renderMemoList() {
             const listContainer = document.getElementById('memoList');
             const searchKeyword = document.getElementById('searchInput').value.toLowerCase().trim();
             listContainer.innerHTML = '';
 
             if (!memos || memos.length === 0) {
-                listContainer.innerHTML = '<div class="empty-state">저장된 메모가 없습니다.<br>위 칸에 바로 적거나 우측 하단 [+] 버튼을 눌러보세요.</div>';
+                listContainer.innerHTML = '<div class="empty-state">저장된 메모가 없습니다.<br>상단의 [+ 새 메모] 버튼을 눌러 작성해 보세요.</div>';
                 return;
             }
 
@@ -738,97 +527,18 @@
 
             filteredMemos.forEach(memo => {
                 const item = document.createElement('div');
-                item.className = `memo-item ${isSelectMode ? 'select-mode' : ''}`;
-                if (selectedMemoIds.has(memo.id)) item.classList.add('selected');
+                item.className = 'memo-item';
                 
                 const previewText = memo.layer2 || memo.layer1 || "(빈 메모)";
                 const formattedDate = formatDate(memo.updatedAt);
 
                 item.innerHTML = `
-                    <div class="memo-checkbox">✓</div>
-                    <div class="memo-content-wrap">
-                        <div class="memo-preview">${escapeHtml(previewText)}</div>
-                        <div class="memo-date">${formattedDate}</div>
-                    </div>
+                    <div class="memo-preview">${escapeHtml(previewText)}</div>
+                    <div class="memo-date">${formattedDate}</div>
                 `;
-
-                item.onclick = () => {
-                    if (isSelectMode) {
-                        toggleSelectMemo(memo.id);
-                    } else {
-                        openMemo(memo.id, 'list');
-                    }
-                };
+                item.onclick = () => openMemo(memo.id, 'list');
                 listContainer.appendChild(item);
             });
-        }
-
-        function enterSelectMode() {
-            closeMenuDropdown();
-            isSelectMode = true;
-            selectedMemoIds.clear();
-            document.getElementById('selectionActionBar').classList.add('active');
-            renderMemoList();
-        }
-
-        function exitSelectMode() {
-            isSelectMode = false;
-            selectedMemoIds.clear();
-            const bar = document.getElementById('selectionActionBar');
-            if (bar) bar.classList.remove('active');
-            renderMemoList();
-        }
-
-        function toggleSelectMemo(id) {
-            if (selectedMemoIds.has(id)) {
-                selectedMemoIds.delete(id);
-            } else {
-                selectedMemoIds.add(id);
-            }
-            renderMemoList();
-        }
-
-        function selectAllMemos() {
-            if (selectedMemoIds.size === memos.length) {
-                selectedMemoIds.clear();
-            } else {
-                memos.forEach(m => selectedMemoIds.add(m.id));
-            }
-            renderMemoList();
-        }
-
-        function deleteSelectedMemos() {
-            if (selectedMemoIds.size === 0) {
-                alert('선택된 메모가 없습니다.');
-                return;
-            }
-            if (confirm(`선택한 ${selectedMemoIds.size개의 메모를 삭제하시겠습니까?`)) {
-                memos = memos.filter(m => !selectedMemoIds.has(m.id));
-                saveToStorage();
-                exitSelectMode();
-                renderMemoList();
-                renderCalendar();
-            }
-        }
-
-        function exportSelectedMemos() {
-            if (selectedMemoIds.size === 0) {
-                alert('선택된 메모가 없습니다.');
-                return;
-            }
-            let content = '';
-            memos.filter(m => selectedMemoIds.has(m.id)).forEach(memo => {
-                content += `[작성 일자: ${formatDate(memo.updatedAt)}]\n\n--- 긍정 메모 ---\n${memo.layer2 || '(없음)'}\n\n--- 원본 메모 ---\n${memo.layer1 || '(없음)'}\n\n====================\n\n`;
-            });
-
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `switch_memos_export.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
-            exitSelectMode();
         }
 
         function renderCalendar() {
@@ -856,7 +566,7 @@
                 
                 let previewHTML = '';
                 if (memosForDay.length > 0) {
-                    // 당일 제일 최근에 '수정된' 메모 기준 정렬 후 1개 표시
+                    // 당일 제일 최근에 입력된 메모 딱 1개만 표시
                     memosForDay.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                     const latestMemo = memosForDay[0];
                     const text = latestMemo.layer2 || latestMemo.layer1 || '(빈 메모)';
@@ -885,8 +595,10 @@
             const title = document.getElementById('modalDateTitle');
             const list = document.getElementById('modalMemoList');
 
+            // 날짜 예쁘게 포맷팅 (예: 2026년 10월 26일)
             const dObj = new Date(dateStr);
-            title.innerText = `${dObj.getFullYear()}년 ${dObj.getMonth() + 1}월 ${dObj.getDate()}일`;
+            const prettyDateStr = `${dObj.getFullYear()}년 ${dObj.getMonth() + 1}월 ${dObj.getDate()}일`;
+            title.innerText = prettyDateStr;
             list.innerHTML = '';
 
             const memosForDay = memos.filter(m => m.updatedAt.startsWith(dateStr));
@@ -903,10 +615,8 @@
                     div.className = 'memo-item';
                     div.style.cursor = 'pointer';
                     div.innerHTML = `
-                        <div class="memo-content-wrap">
-                            <div class="memo-preview">${escapeHtml(preview)}</div>
-                            <div class="memo-date">${timeStr}</div>
-                        </div>
+                        <div class="memo-preview">${escapeHtml(preview)}</div>
+                        <div class="memo-date">${timeStr}</div>
                     `;
                     div.onclick = () => {
                         closeDateModal();
@@ -925,7 +635,6 @@
 
         function createNewMemo(fromView) {
             closeMenuDropdown();
-            exitSelectMode();
             const now = new Date();
             const newMemo = {
                 id: 'memo_' + Date.now(),
@@ -949,6 +658,10 @@
             const t2 = document.getElementById('layer2');
             t1.value = memo.layer1 || '';
             t2.value = memo.layer2 || '';
+
+            // 텍스트 양에 맞춰 textarea 높이 자동 조절
+            autoResizeTextarea(t1);
+            autoResizeTextarea(t2);
 
             isLayer2Visible = true;
             t2.classList.remove('hidden');
@@ -978,6 +691,7 @@
             }
         }
 
+        // 점 3개 메뉴 토글
         function toggleMenuDropdown(event) {
             event.stopPropagation();
             const dropdown = document.getElementById('menuDropdown');
@@ -989,10 +703,12 @@
             if (dropdown) dropdown.classList.remove('active');
         }
 
+        // 화면 바깥 누르면 메뉴 닫히기
         window.onclick = function() {
             closeMenuDropdown();
         };
 
+        // 편집 페이지에서 삭제하기
         function deleteCurrentMemo() {
             closeMenuDropdown();
             if (confirm('이 메모를 삭제하시겠습니까?')) {
@@ -1012,6 +728,12 @@
                     renderMemoList();
                 }
             }
+        }
+
+        // 엔터 칠수록 점점 입력칸이 길어지도록 자동 조절하는 함수
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
         }
 
         function autoSave() {
@@ -1047,6 +769,7 @@
             URL.revokeObjectURL(url);
         }
 
+        // 스위치 클릭 시 비밀번호 없이 즉시 전환
         function handleToggleClick() {
             closeMenuDropdown();
             setLayerState(!isLayer2Visible);
